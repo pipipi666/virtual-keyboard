@@ -1,0 +1,75 @@
+body {
+  margin: 0;
+}
+
+.container {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  font-family: "Roboto", Arial, sans-serif;
+}
+
+.output {
+  width: 500px;
+  max-width: 80vw;
+  resize: vertical;
+}
+
+.keyboard {
+  width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: white;
+  user-select: none;
+}
+
+.keyboard__row {
+  display: flex;
+  gap: 7px;
+  height: 40px;
+}
+
+.key {
+  position: relative;
+  width: 40px;
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.key-default {
+  background-color: gray;
+  font-weight: 700;
+}
+
+.key-control {
+  background-color: black;
+}
+
+.key-s {
+  width: 40px;
+}
+
+.key-m {
+  flex: 1;
+}
+
+.key_active {
+  border-radius: 20px;
+  background-color: blueviolet;
+}
+
+.additional {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  font-size: 0.8rem;
+}
