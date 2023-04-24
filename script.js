@@ -187,6 +187,7 @@ const keyValues = [
   },
   {
     value: 'Enter',
+    code: 'Enter',
     isControl: true,
     isLarge: true,
   },
@@ -295,6 +296,7 @@ const keyValues = [
     isControl: true,
   },
 ];
+
 const body = document.querySelector('body');
 
 const container = document.createElement('div');
@@ -311,8 +313,12 @@ keyboard.className = 'keyboard';
 container.append(keyboard);
 let currentRow = null;
 
+let isCaps = false;
+
+const getLang = () => localStorage.getItem('lang');
+
 const drawKeyboard = () => {
-  const lang = localStorage.getItem('lang');
+  const lang = getLang();
   keyValues.forEach((k) => {
     if (k.isNewRow) {
       const row = document.createElement('div');
@@ -334,14 +340,169 @@ const drawKeyboard = () => {
     if (k.additional) {
       el.setAttribute('data-additional', k.additional);
     }
-    if (lang === 'ru' && k.ru) {
-      el.textContent = k.ru;
-    } else {
-      el.textContent = k.value;
-    }
+    el.textContent = lang === 'ru' && k.ru ? k.ru : k.value;
 
     currentRow.append(el);
   });
 };
 
 drawKeyboard();
+
+const keys = keyboard.querySelectorAll('.key');
+
+const caps = keyboard.querySelector('[data-value = "CapsLock"]');
+
+const isChar = (ind) => keys[ind].dataset.value.length === 1;
+
+const isAdditional = (ind) => keys[ind].dataset.additional && !(getLang() === 'ru' && keys[ind].dataset.ru);
+
+const changeText = (text, num = 0, offset = 0) => {
+  const start = textArea.selectionStart + offset;
+  const str = textArea.textContent;
+  textArea.textContent = str.slice(0, start - num) + text + str.slice(start);
+  textArea.selectionStart = start + text.length - num;
+};
+
+const addText = (text) => {
+  changeText(text);
+};
+
+const deleteText = (num, offset = 0) => {
+  textArea.focus();
+  changeText('', num, offset);
+};
+
+const setDefaultKey = (ind) => {
+  if (isChar(ind)) {
+    keys[ind].textContent = isCaps
+      ? keys[ind].textContent.toUpperCase()
+      : keys[ind].textContent.toLowerCase();
+  }
+};
+
+const switchLang = () => {
+  const lang = getLang();
+  localStorage.setItem('lang', lang === 'ru' ? 'en' : 'ru');
+};
+
+const switchKeys = () => {
+  const lang = getLang();
+  for (let i = 0; i < keys.length; i += 1) {
+    if (lang === 'en') {
+      keys[i].textContent = isCaps && isChar(i)
+        ? keys[i].dataset.value.toUpperCase()
+        : keys[i].dataset.value;
+    } else if (keys[i].dataset[lang]) {
+      keys[i].textContent = isCaps && isChar(i)
+        ? keys[i].dataset[lang].toUpperCase()
+        : keys[i].dataset[lang];
+    }
+  }
+};
+
+const onCapsDown = () => {
+  isCaps = !isCaps;
+  if (!isCaps && caps.classList.contains('key_active')) {
+    caps.classList.remove('key_active');
+  } else {
+    caps.classList.add('key_active');
+  }
+  for (let i = 0; i < keys.length; i += 1) {
+    setDefaultKey(i);
+  }
+};
+
+const onShiftDown = () => {
+  for (let i = 0; i < keys.length; i += 1) {
+    if (isChar(i)) {
+      keys[i].textContent = isCaps
+        ? keys[i].textContent.toLowerCase()
+        : keys[i].textContent.toUpperCase();
+    }
+    if (isAdditional(i)) {
+      keys[i].textContent = keys[i].dataset.additional;
+    }
+  }
+};
+
+const onShiftUp = () => {
+  for (let i = 0; i < keys.length; i += 1) {
+    setDefaultKey(i);
+    if (isAdditional(i)) {
+      keys[i].textContent = keys[i].dataset.value;
+    }
+  }
+};
+
+const onKeydown = (e) => {
+  if (e.key === 'Backspace') {
+    deleteText(1);
+  } else if (e.key === 'Enter') {
+    addText('\n');
+  } else if (e.key === 'Delete') {
+    deleteText(1, 1);
+  } else if (e.key === 'Tab') {
+    addText('    ');
+  } else if (e.key === 'CapsLock') {
+    onCapsDown();
+  }
+  if (e.shiftKey) {
+    onShiftDown();
+  }
+  if (e.ctrlKey && e.altKey) {
+    switchLang();
+    switchKeys();
+  }
+  keys.forEach((k) => {
+    if (
+      k.dataset.code === e.code
+      || (!k.dataset.code && k.dataset.value === e.key.toLowerCase())
+    ) {
+      if (k.dataset.code === 'CapsLock') {
+        if (isCaps) {
+          k.classList.add('key_active');
+        } else {
+          k.classList.remove('key_active');
+        }
+        return;
+      }
+      if (!k.classList.contains('key_active')) {
+        k.classList.add('key_active');
+      }
+      if (k.textContent.length === 1) {
+        addText(k.textContent);
+      }
+    }
+  });
+  // textArea.focus();
+  // const keyboardEvent = document.createEvent('KeyboardEvent');
+};
+
+const onKeyup = (e) => {
+  if (!e.shiftKey) {
+    onShiftUp();
+  }
+  if (e.key === 'CapsLock') return;
+  keys.forEach((k) => {
+    if (
+      k.dataset.code === e.code
+      || (
+        !k.dataset.code
+        && k.dataset.value === e.key.toLowerCase()
+        && k.classList.contains('key_active'))
+    ) {
+      k.classList.remove('key_active');
+    }
+  });
+};
+
+window.addEventListener('keydown', (e) => {
+  if (e.key !== 'F5') {
+    e.preventDefault();
+  }
+  onKeydown(e);
+});
+
+window.addEventListener('keyup', (e) => {
+  onKeyup(e);
+});
