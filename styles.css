@@ -45,13 +45,17 @@ body {
   cursor: pointer;
 }
 
+.key:hover {
+  background-color: #babbf3;
+}
+
 .key-default {
-  background-color: gray;
+  background-color: #858cf0;
   font-weight: 700;
 }
 
 .key-control {
-  background-color: black;
+  background-color: #4853b4;
 }
 
 .key-s {
@@ -62,9 +66,9 @@ body {
   flex: 1;
 }
 
-.key_active {
+.key:active, .key_active {
   border-radius: 20px;
-  background-color: blueviolet;
+  background-color: #313250;
 }
 
 .additional {
@@ -72,4 +76,9 @@ body {
   top: 3px;
   left: 3px;
   font-size: 0.8rem;
+}
+
+textarea {
+  font-size: 18px;
+  font-family: "Roboto", Arial, sans-serif;
 }

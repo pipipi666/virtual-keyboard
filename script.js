@@ -268,6 +268,7 @@ const keyValues = [
   },
   {
     value: ' ',
+    code: 'Space',
     isLarge: true,
   },
   {
@@ -314,6 +315,7 @@ container.append(keyboard);
 let currentRow = null;
 
 let isCaps = false;
+let mouseKey = '';
 
 const getLang = () => localStorage.getItem('lang');
 
@@ -357,6 +359,7 @@ const isChar = (ind) => keys[ind].dataset.value.length === 1;
 const isAdditional = (ind) => keys[ind].dataset.additional && !(getLang() === 'ru' && keys[ind].dataset.ru);
 
 const changeText = (text, num = 0, offset = 0) => {
+  textArea.focus();
   const start = textArea.selectionStart + offset;
   const str = textArea.textContent;
   textArea.textContent = str.slice(0, start - num) + text + str.slice(start);
@@ -368,7 +371,6 @@ const addText = (text) => {
 };
 
 const deleteText = (num, offset = 0) => {
-  textArea.focus();
   changeText('', num, offset);
 };
 
@@ -456,7 +458,7 @@ const onKeydown = (e) => {
   keys.forEach((k) => {
     if (
       k.dataset.code === e.code
-      || (!k.dataset.code && k.dataset.value === e.key.toLowerCase())
+      || (!k.dataset.code && k.dataset.value === e.code.replace('Key', '').toLowerCase())
     ) {
       if (k.dataset.code === 'CapsLock') {
         if (isCaps) {
@@ -474,8 +476,6 @@ const onKeydown = (e) => {
       }
     }
   });
-  // textArea.focus();
-  // const keyboardEvent = document.createEvent('KeyboardEvent');
 };
 
 const onKeyup = (e) => {
@@ -488,13 +488,62 @@ const onKeyup = (e) => {
       k.dataset.code === e.code
       || (
         !k.dataset.code
-        && k.dataset.value === e.key.toLowerCase()
+        && k.dataset.value === e.code.replace('Key', '').toLowerCase()
         && k.classList.contains('key_active'))
     ) {
       k.classList.remove('key_active');
     }
   });
 };
+
+const onMousedown = (e) => {
+  mouseKey = e.target;
+  if (e.target.dataset.code === 'Backspace') {
+    deleteText(1);
+  } else if (e.target.dataset.code === 'Enter') {
+    addText('\n');
+  } else if (e.target.dataset.code === 'Delete') {
+    deleteText(1, 1);
+  } else if (e.target.dataset.code === 'Tab') {
+    addText('    ');
+  }
+  if (e.shiftKey) {
+    onShiftDown(e);
+  }
+  if ((e.ctrlKey && e.target.dataset.value === 'Ctrl') || (e.ctrlKey && e.target.dataset.value === 'Alt')) {
+    switchLang();
+    switchKeys();
+  }
+  if (e.target.dataset.code === 'CapsLock') {
+    onCapsDown();
+  }
+  if (!e.target.classList.contains('key_active')) {
+    e.target.classList.add('key_active');
+  }
+  if (e.target.textContent.length === 1) {
+    addText(e.target.textContent);
+  }
+};
+
+const onMouseup = (target) => {
+  if (mouseKey) {
+    mouseKey.classList.remove('key_active');
+  }
+  if (target.dataset.code === 'CapsLock') return;
+  if (target.classList.contains('key_active')) {
+    target.classList.remove('key_active');
+  }
+};
+
+keyboard.addEventListener('mousedown', (e) => {
+  if (e.target.classList.contains('key')) {
+    onMousedown(e);
+  }
+});
+
+window.addEventListener('mouseup', (e) => {
+  onMouseup(e.target);
+});
 
 window.addEventListener('keydown', (e) => {
   if (e.key !== 'F5') {
