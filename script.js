@@ -120,10 +120,12 @@ const keyValues = [
   },
   {
     value: '[',
+    code: 'BracketLeft',
     ru: 'х',
   },
   {
     value: ']',
+    code: 'BracketRight',
     ru: 'ъ',
   },
   {
@@ -178,10 +180,12 @@ const keyValues = [
     ru: 'д',
   },
   {
+    code: 'Semicolon',
     value: ';',
     ru: 'ж',
   },
   {
+    code: 'Quote',
     value: "'",
     ru: 'э',
   },
@@ -227,10 +231,12 @@ const keyValues = [
     ru: 'ь',
   },
   {
+    code: 'Comma',
     value: ',',
     ru: 'б',
   },
   {
+    code: 'Period',
     value: '.',
     ru: 'ю',
   },
@@ -330,6 +336,7 @@ infoLang.className = 'info';
 container.append(infoLang);
 
 let isCaps = false;
+let isCapsDown = false;
 let mouseKey = '';
 
 const getLang = () => localStorage.getItem('lang');
@@ -461,7 +468,9 @@ const onKeydown = (e) => {
   } else if (e.key === 'Tab') {
     addText('    ');
   } else if (e.key === 'CapsLock') {
+    if (isCapsDown) return;
     onCapsDown();
+    isCapsDown = true;
   }
   if (e.shiftKey) {
     onShiftDown();
@@ -497,7 +506,10 @@ const onKeyup = (e) => {
   if (!e.shiftKey) {
     onShiftUp();
   }
-  if (e.key === 'CapsLock') return;
+  if (e.key === 'CapsLock') {
+    isCapsDown = false;
+    return;
+  }
   keys.forEach((k) => {
     if (
       k.dataset.code === e.code
@@ -529,7 +541,7 @@ const onMousedown = (e) => {
     switchLang();
     switchKeys();
   }
-  if (e.target.dataset.code === 'CapsLock') {
+  if (e.target.dataset.value === 'CapsLock') {
     onCapsDown();
   }
   if (!e.target.classList.contains('key_active')) {
