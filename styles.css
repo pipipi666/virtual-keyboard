@@ -10,13 +10,25 @@ body {
   align-items: center;
   gap: 20px;
   padding: 20px;
-  font-family: "Roboto", Arial, sans-serif;
+  font-family: 'Roboto', Arial, sans-serif;
+}
+
+.h1 {
+  font-family: 'Rampart One';
+  color: #858cf0;
+}
+
+.info {
+  margin: 0;
 }
 
 .output {
-  width: 500px;
+  padding: 10px;
+  width: 680px;
   max-width: 80vw;
   resize: vertical;
+  border: 1px solid #858cf0;
+  border-radius: 20px;
 }
 
 .keyboard {
@@ -80,5 +92,5 @@ body {
 
 textarea {
   font-size: 18px;
-  font-family: "Roboto", Arial, sans-serif;
+  font-family: 'Roboto', Arial, sans-serif;
 }

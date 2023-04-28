@@ -304,15 +304,30 @@ const container = document.createElement('div');
 container.className = 'container';
 body.prepend(container);
 
+const h1 = document.createElement('h1');
+h1.textContent = 'virtual keyboard';
+h1.className = 'h1';
+container.append(h1);
+
 const textArea = document.createElement('textarea');
 textArea.className = 'output';
-textArea.rows = 10;
+textArea.rows = 8;
 container.append(textArea);
 
 const keyboard = document.createElement('div');
 keyboard.className = 'keyboard';
 container.append(keyboard);
 let currentRow = null;
+
+const infoOS = document.createElement('p');
+infoOS.textContent = 'Клавиатура создана в операционной системе Windows';
+infoOS.className = 'info';
+container.append(infoOS);
+
+const infoLang = document.createElement('p');
+infoLang.textContent = 'Комбинация для переключения языка: ctrl + alt';
+infoLang.className = 'info';
+container.append(infoLang);
 
 let isCaps = false;
 let mouseKey = '';
