@@ -14,7 +14,7 @@ body {
 }
 
 .h1 {
-  font-family: 'Rampart One';
+  font-family: 'Rampart One', Arial, sans-serif;
   color: #858cf0;
 }
 
@@ -91,6 +91,7 @@ body {
 }
 
 textarea {
+  outline: none;
   font-size: 18px;
   font-family: 'Roboto', Arial, sans-serif;
 }
