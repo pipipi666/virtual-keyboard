@@ -534,15 +534,12 @@ const onMousedown = (e) => {
   } else if (e.target.dataset.code === 'Tab') {
     addText('    ');
   }
-  if (e.shiftKey) {
+  if (e.target.dataset.value === 'Shift') {
     onShiftDown(e);
   }
   if ((e.ctrlKey && e.target.dataset.value === 'Ctrl') || (e.ctrlKey && e.target.dataset.value === 'Alt')) {
     switchLang();
     switchKeys();
-  }
-  if (e.target.dataset.value === 'CapsLock') {
-    onCapsDown();
   }
   if (!e.target.classList.contains('key_active')) {
     e.target.classList.add('key_active');
@@ -550,16 +547,20 @@ const onMousedown = (e) => {
   if (e.target.textContent.length === 1) {
     addText(e.target.textContent);
   }
+  if (e.target.dataset.value === 'CapsLock') {
+    onCapsDown();
+  }
 };
 
 const onMouseup = (target) => {
   if (mouseKey) {
+    if (mouseKey.dataset.value === 'CapsLock') return;
     mouseKey.classList.remove('key_active');
   }
-  if (target.dataset.code === 'CapsLock') return;
   if (target.classList.contains('key_active')) {
     target.classList.remove('key_active');
   }
+  textArea.focus();
 };
 
 keyboard.addEventListener('mousedown', (e) => {
@@ -569,6 +570,9 @@ keyboard.addEventListener('mousedown', (e) => {
 });
 
 window.addEventListener('mouseup', (e) => {
+  if (!e.shiftKey) {
+    onShiftUp();
+  }
   onMouseup(e.target);
 });
 
